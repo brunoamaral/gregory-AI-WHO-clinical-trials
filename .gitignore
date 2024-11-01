@@ -3,3 +3,4 @@
 downloads/
 __pycache__/
 ICTRP-Results.xml
+run_download_cts.sh
