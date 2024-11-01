@@ -46,6 +46,9 @@ def main():
 
     source_id = args.source_id
     condition = args.condition
+    # Make sure downloads directory exists
+    destination_dir = os.path.join(os.getcwd(), 'downloads')
+    os.makedirs(destination_dir, exist_ok=True)
 
     # Set up options for Chrome
     chrome_options = Options()
@@ -153,8 +156,6 @@ def main():
         # Close the browser
         driver.quit()
         # Optionally move downloaded files to a permanent location
-        destination_dir = os.path.join(os.getcwd(), 'downloads')
-        os.makedirs(destination_dir, exist_ok=True)
         for filename in os.listdir(download_dir):
             shutil.move(os.path.join(download_dir, filename), os.path.join(destination_dir, filename))
         # Clean up the temporary download directory
