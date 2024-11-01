@@ -1,0 +1,5 @@
+.env
+.DS_Store
+downloads/
+__pycache__/
+ICTRP-Results.xml
