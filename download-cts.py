@@ -40,12 +40,19 @@ def main():
     # Set up argument parsing
     parser = argparse.ArgumentParser(description='Download and upload clinical trial data.')
     parser.add_argument('--source-id', required=True, help='Source ID for the upload process')
-    parser.add_argument('--condition', required=True, help='Condition to search for')
+    parser.add_argument('--condition', required=False, help='Condition to search for')
+    parser.add_argument('--title-search', required=False, help="Search query for the title field")
 
     args = parser.parse_args()
 
     source_id = args.source_id
     condition = args.condition
+    title_search = args.title_search
+
+    # Ensure that at least one of --condition or --title-search is provided
+    if not condition and not title_search:
+        parser.error('At least one of --condition or --title-search must be provided.')
+
     # Make sure downloads directory exists
     destination_dir = os.path.join(os.getcwd(), 'downloads')
     os.makedirs(destination_dir, exist_ok=True)
@@ -86,22 +93,31 @@ def main():
     try:
         wait = WebDriverWait(driver, 60)
 
-        # Step 1: Open the URL
+        # Open the URL
         driver.get("https://trialsearch.who.int/AdvSearch.aspx")
 
-        # Step 2: Focus on the input field
-        condition_input = wait.until(EC.element_to_be_clickable(
-            (By.ID, "ctl00_ContentPlaceHolder1_txtCondition")))
+        # Input condition if provided
+        if condition:
+            # Focus on the condition input field
+            condition_input = wait.until(EC.element_to_be_clickable(
+                (By.ID, "ctl00_ContentPlaceHolder1_txtCondition")))
+            # Write the condition in the input field
+            condition_input.send_keys(condition)
 
-        # Step 3: Write the condition in the input field
-        condition_input.send_keys(condition)
+        # Input title search if provided
+        if title_search:
+            # Focus on the title input field
+            title_input = wait.until(EC.element_to_be_clickable(
+                (By.ID, "ctl00_ContentPlaceHolder1_txtTitle")))
+            # Write the title search string into the input field
+            title_input.send_keys(title_search)
 
-        # Step 4: Set the recruiting status to "ALL"
+        # Set the recruiting status to "ALL"
         status_select = Select(driver.find_element(
             By.ID, "ctl00_ContentPlaceHolder1_ddlRecruitingStatus"))
         status_select.select_by_visible_text("ALL")
 
-        # Step 6: Click the search button
+        # Click the search button
         search_button = driver.find_element(
             By.ID, "ctl00_ContentPlaceHolder1_btnSearch")
         search_button.click()
@@ -110,12 +126,12 @@ def main():
         wait.until(EC.presence_of_element_located(
             (By.ID, "ctl00_ContentPlaceHolder1_btnLaunchDialogTerms")))
 
-        # Step 7: Click the "Launch Terms" button
+        # Click the "Launch Terms" button
         launch_terms_button = driver.find_element(
             By.ID, "ctl00_ContentPlaceHolder1_btnLaunchDialogTerms")
         launch_terms_button.click()
 
-        # Step 8: Click the "Export" button
+        # Click the "Export" button
         export_button = wait.until(EC.element_to_be_clickable(
             (By.ID, "ctl00_ContentPlaceHolder1_btnExport")))
         export_button.click()
