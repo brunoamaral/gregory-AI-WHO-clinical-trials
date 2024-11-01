@@ -1,3 +1,9 @@
+# What it does
+
+This script opens a headless chrome to visit https://trialsearch.who.int/AdvSearch.aspx and run a search for clinical trials for a specified condition.
+
+The results are downloaded as an XML file and uploaded to an install of [Gregory-AI](https://github.com/brunoamaral/gregory-ai).
+
 # Usage
 
 ## 1. Create a .env file
